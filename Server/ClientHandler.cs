@@ -616,6 +616,7 @@ namespace DarkMultiPlayerServer
                     case ClientMessageType.CRAFT_LIBRARY:
                         Messages.CraftLibrary.HandleCraftLibrary(client, message.data);
                         break;
+                    
                     case ClientMessageType.SCREENSHOT_LIBRARY:
                         Messages.ScreenshotLibrary.HandleScreenshotLibrary(client, message.data);
                         break;
@@ -642,6 +643,9 @@ namespace DarkMultiPlayerServer
                         break;
                     case ClientMessageType.SPLIT_MESSAGE:
                         Messages.SplitMessage.HandleSplitMessage(client, message.data);
+                        break;
+                    case ClientMessageType.PERMISSIONS_UPDATE:
+                        Messages.PermissionsUpdate.HandlePermissionsUpdate(client, message.data);
                         break;
                     case ClientMessageType.CONNECTION_END:
                         Messages.ConnectionEnd.HandleConnectionEnd(client, message.data);

@@ -28,9 +28,6 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerTest|AnyCPU'">
-    <OutputPath>bin\ServerTest\</OutputPath>
-  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="System" />
@@ -62,6 +59,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="ConfigNodeSerializer.cs" />
+    <Compile Include="PermissionsManager.cs" />
     <Compile Include="Utilities\CompatibilityChecker.cs" />
     <Compile Include="VesselWorker.cs" />
     <Compile Include="TimeSyncer.cs" />

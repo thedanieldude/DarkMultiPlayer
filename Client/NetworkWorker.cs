@@ -9,7 +9,7 @@ using System.Threading;
 using UnityEngine;
 using DarkMultiPlayerCommon;
 using MessageStream2;
-
+using System.Linq;
 namespace DarkMultiPlayer
 {
     public class NetworkWorker
@@ -858,6 +858,8 @@ namespace DarkMultiPlayer
                     case ServerMessageType.SPLIT_MESSAGE:
                         HandleSplitMessage(message.data);
                         break;
+                    case ServerMessageType.PERMISSIONS_UPDATE:
+                        break;
                     case ServerMessageType.CONNECTION_END:
                         HandleConnectionEnd(message.data);
                         break;
@@ -895,7 +897,31 @@ namespace DarkMultiPlayer
                 DarkLog.Debug("Error handling HANDSHAKE_CHALLANGE message, exception: " + e);
             }
         }
+        private void HandlePermissionsUpdate(byte[] messageData)
+        {
+            VesselPermissions perm = new VesselPermissions();
+            using (MessageReader mr = new MessageReader(messageData))
+            {
+                perm.VesselID = mr.Read<string>();
+                perm.OwnerName = mr.Read<string>();
+                perm.OwnerIsFaction = mr.Read<bool>();
+                perm.CanEditPermissions = mr.Read<string[]>().ToList();
+                perm.CanControl = mr.Read<string[]>().ToList();
+            }
 
+            if (PermissionsManager.VesselPerms.ContainsKey(perm.VesselID))
+            {
+
+                    PermissionsManager.VesselPerms[perm.VesselID] = perm;
+                
+
+            }
+            else
+            {
+                PermissionsManager.VesselPerms.Add(perm.VesselID, perm);
+            }
+        }
+    
         private void HandleHandshakeReply(byte[] messageData)
         {
 
