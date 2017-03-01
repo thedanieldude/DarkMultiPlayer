@@ -6,7 +6,7 @@ using System.Net;
 using System.Text;
 using DarkMultiPlayerCommon;
 using SettingsParser;
-
+using System.Collections.Generic;
 namespace DarkMultiPlayerServer
 {
     public class Server
@@ -28,12 +28,13 @@ namespace DarkMultiPlayerServer
 
         public static void Main()
         {
-            #if !DEBUG
+
+#if !DEBUG
             try
             {
-            #endif
-                //Start the server clock
-                serverClock = new Stopwatch();
+#endif
+            //Start the server clock
+            serverClock = new Stopwatch();
                 serverClock.Start();
 
                 Settings.Reset();
@@ -56,7 +57,7 @@ namespace DarkMultiPlayerServer
                 //Set universe directory and modfile path
                 universeDirectory = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Universe");
                 modFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DMPModControl.txt");
-
+            
                 if (!Directory.Exists(configDirectory))
                 {
                     Directory.CreateDirectory(configDirectory);
