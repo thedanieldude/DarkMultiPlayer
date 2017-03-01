@@ -8,7 +8,10 @@ namespace DarkMultiPlayerServer
     public static class PermissionsHandler
     {
         public static Dictionary<string, VesselPermissions> vesselperms=new Dictionary<string,VesselPermissions>();
-
+        public static void Reset()
+        {
+            vesselperms = new Dictionary<string, VesselPermissions>();
+        }
         public static void GeneratePermissionsForVesselsWithoutPermissions()
         {
             string Vesseldirectory = Path.Combine(Server.universeDirectory, "Vessels");
@@ -21,7 +24,7 @@ namespace DarkMultiPlayerServer
             {
                 string VesselID = Path.GetFileNameWithoutExtension(file);
                 if (File.Exists(Path.Combine(Permdirectory, VesselID + ".json"))) continue;
-                VesselPermissions output = new VesselPermissions();
+                VesselPermissions output = VesselPermissions.Default;
                 output.VesselID = VesselID;
                 VesselPermissions.SaveVesselPermissions(output);
                 

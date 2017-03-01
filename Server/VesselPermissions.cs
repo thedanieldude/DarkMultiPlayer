@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.IO;
@@ -11,17 +9,24 @@ namespace DarkMultiPlayerServer
     [DataContract]
     public class VesselPermissions
     {
-        
+
         [DataMember]
-        public string VesselID = "-1";
+        public string VesselID;
         [DataMember]
-        public string OwnerName="-1";
+        public string OwnerName;
         [DataMember]
-        public bool OwnerIsFaction=false;
+        public bool OwnerIsFaction;
         [DataMember]
-        public List<String> CanEditPermissions=new List<String>() { "<everyone>" };
+        public List<String> CanEditPermissions;
         [DataMember]
-        public List<String> CanControl=new List<String>() { "<everyone>" };
+        public List<String> CanControl;
+        public static VesselPermissions Default
+        {
+            get
+            {
+                return new VesselPermissions() { VesselID = "-1", OwnerName = "-1", OwnerIsFaction = false, CanEditPermissions = new List<String>() { "<everyone>" }, CanControl = new List<String>() { "<everyone>" } };
+            }
+        }
         public static VesselPermissions LoadVesselPermissions(string id) {
             string directory = Path.Combine(Server.universeDirectory, "Vessels", "Permissions");
             if (!Directory.Exists(directory))

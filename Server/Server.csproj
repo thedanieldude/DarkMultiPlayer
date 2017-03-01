@@ -27,6 +27,9 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ServerTest|AnyCPU'">
+    <OutputPath>bin\ServerTest\</OutputPath>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="SettingsParser">
@@ -43,6 +46,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Faction.cs" />
+    <Compile Include="FactionsHandler.cs" />
     <Compile Include="GameplaySettings.cs" />
     <Compile Include="LogExpire.cs" />
     <Compile Include="Main.cs" />
