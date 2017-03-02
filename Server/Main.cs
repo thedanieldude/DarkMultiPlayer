@@ -33,6 +33,7 @@ namespace DarkMultiPlayerServer
             try
             {
 #endif
+
             //Start the server clock
             serverClock = new Stopwatch();
                 serverClock.Start();
@@ -110,6 +111,7 @@ namespace DarkMultiPlayerServer
                 PermissionsHandler.LoadPermissions();
                 FactionsHandler.Reset();
                 FactionsHandler.LoadFactions();
+
 
                 if (System.Net.Sockets.Socket.OSSupportsIPv6)
                 {

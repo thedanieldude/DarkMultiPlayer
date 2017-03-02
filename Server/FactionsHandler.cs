@@ -11,6 +11,21 @@ namespace DarkMultiPlayerServer
         {
             Factions.Clear();
         }
+        public static string GetFactionOf(ClientObject client)
+        {
+            foreach(var x in Factions)
+            {
+                if (x.Value.OwnerName == client.playerName)
+                {
+                    return x.Key;
+                }
+                if (x.Value.Members.ContainsKey(client.playerName))
+                {
+                    return x.Key;
+                }
+            }
+            return "";
+        }
         public static void LoadFactions()
         {
             string directory = Path.Combine(Server.universeDirectory, "Factions");
@@ -25,7 +40,7 @@ namespace DarkMultiPlayerServer
                 Factions.Add(FactionId,faction);
             }
         }
-        public static void SavePermissions()
+        public static void SaveFactions()
         {
             string directory = Path.Combine(Server.universeDirectory, "Factions");
             foreach (Faction perm in Factions.Values)

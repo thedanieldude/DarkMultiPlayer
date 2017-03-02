@@ -30,7 +30,7 @@ namespace DarkMultiPlayerServer.Messages
             }
             
             ClientHandler.SendToClient(client, message, false);
-            PermissionsComplete(client);
+            FactionRequest.SendFactionList(client);
         }
         public static void PermissionsComplete(ClientObject client)
         {

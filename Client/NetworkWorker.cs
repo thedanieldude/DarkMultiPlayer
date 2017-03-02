@@ -867,6 +867,9 @@ namespace DarkMultiPlayer
                     case ServerMessageType.SPLIT_MESSAGE:
                         HandleSplitMessage(message.data);
                         break;
+                    case ServerMessageType.FACTION_REQUEST:
+                        HandleFactionRequest(message.data);
+                        break;
                     case ServerMessageType.PERMISSIONS_UPDATE:
                         HandlePermissionsUpdate(message.data);
                         break;
@@ -888,6 +891,33 @@ namespace DarkMultiPlayer
             {
                 DarkLog.Debug("Error handling message type " + message.type + ", exception: " + e);
                 SendDisconnect("Error handling " + message.type + " message");
+            }
+        }
+        private void HandleFactionRequest(byte[] messageData)
+        {
+            
+            using(MessageReader mr = new MessageReader(messageData))
+            {
+                FactionManager.Reset();
+                FactionManager.MyFactionID = mr.Read<string>();
+                DarkLog.Debug("Recieved my faction ID: " + FactionManager.MyFactionID);
+                int count = mr.Read<int>();
+                for(int i =0; i < count; i++)
+                {
+                    var faction = new Faction();
+                    faction.FactionID = mr.Read<string>();
+                    faction.FactionName = mr.Read<string>();
+                    faction.OwnerName = mr.Read<string>();
+                    var members = mr.Read<string[]>();
+                    var ranks = mr.Read<int[]>();
+                    faction.Members = new Dictionary<string, int>();
+                    for (int x = 0; x < members.Length; x++)
+                    {
+                        faction.Members.Add(members[x], ranks[x]);
+                    }
+                    faction.PublicFaction = mr.Read<bool>();
+                    FactionManager.Factions.Add(faction.FactionID, faction);
+                }
             }
         }
         private void HandlePermissionsComplete(byte[] messageData)
@@ -949,7 +979,7 @@ namespace DarkMultiPlayer
             using(MessageReader mr = new MessageReader(messageData))
             {
                 int permamount = mr.Read<int>();
-                    DarkLog.Debug("Recieved " + permamount);
+                    DarkLog.Debug("Recieved " + permamount +" permissions");
                 PermissionsManager.Reset();
                 for (int i = 0; i < permamount; i++)
                 {
@@ -960,7 +990,6 @@ namespace DarkMultiPlayer
                     var permissions = mr.Read<int[]>().ToList();
                     
                     perm.Permissions = Common.ListsToDictionary(players, permissions);
-                    DarkLog.Debug(perm.VesselID);
                     PermissionsManager.VesselPerms.Add(perm.VesselID, perm);
                 }
                 

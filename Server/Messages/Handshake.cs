@@ -158,7 +158,7 @@ namespace DarkMultiPlayerServer.Messages
             client.playerName = playerName;
             client.publicKey = playerPublicKey;
             client.clientVersion = clientVersion;
-
+            client.faction = FactionsHandler.GetFactionOf(client);
             if (handshakeReponse == HandshakeReply.HANDSHOOK_SUCCESSFULLY)
             {
                 if (BanSystem.fetch.IsPlayerNameBanned(client.playerName) || BanSystem.fetch.IsIPBanned(client.ipAddress) || BanSystem.fetch.IsPublicKeyBanned(client.publicKey))

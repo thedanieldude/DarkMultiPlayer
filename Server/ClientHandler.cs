@@ -879,6 +879,7 @@ namespace DarkMultiPlayerServer
         public bool authenticated;
         public byte[] challange;
         public string playerName = "Unknown";
+        public string faction = "";
         public string clientVersion;
         public bool isBanned;
         public IPAddress ipAddress;

@@ -599,6 +599,7 @@ namespace DarkMultiPlayerCommon
         LOCK_SYSTEM,
         MOD_DATA,
         SPLIT_MESSAGE,
+        FACTION_REQUEST,
         FACTION_UPDATE,
         FACTION_DELETED,
         FACTION_INVITE,

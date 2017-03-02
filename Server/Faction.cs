@@ -38,7 +38,7 @@ namespace DarkMultiPlayerServer
             }
             using (FileStream stream = File.Open(path, FileMode.Open))
             {
-                var ser = new DataContractJsonSerializer(typeof(VesselPermissions));
+                var ser = new DataContractJsonSerializer(typeof(Faction));
                 return (Faction)(ser.ReadObject(stream));
             }
         }
@@ -57,7 +57,7 @@ namespace DarkMultiPlayerServer
             using (FileStream stream = File.Open(path, FileMode.OpenOrCreate))
             {
 
-                var ser = new DataContractJsonSerializer(typeof(VesselPermissions));
+                var ser = new DataContractJsonSerializer(typeof(Faction));
                 ser.WriteObject(stream, faction);
 
             }
