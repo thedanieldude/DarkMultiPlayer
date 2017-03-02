@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Runtime.Serialization.Configuration;
 using System.IO;
-
+using DarkMultiPlayerCommon;
 namespace DarkMultiPlayerServer
 {
     [DataContract]
@@ -15,17 +16,17 @@ namespace DarkMultiPlayerServer
         [DataMember]
         public string OwnerName;
         [DataMember]
-        public bool OwnerIsFaction;
-        [DataMember]
-        public List<String> CanEditPermissions;
-        [DataMember]
-        public List<String> CanControl;
+        public Dictionary<String,int> Permissions;
         public static VesselPermissions Default
         {
             get
             {
-                return new VesselPermissions() { VesselID = "-1", OwnerName = "-1", OwnerIsFaction = false, CanEditPermissions = new List<String>() { "<everyone>" }, CanControl = new List<String>() { "<everyone>" } };
+                return new VesselPermissions() { VesselID = "-1", OwnerName = "", Permissions = new Dictionary<string, int>() { { "<everyone>", (int)VesselPlayerPerms.All } } };
             }
+        }
+        public VesselPermissions()
+        {
+            Permissions = new Dictionary<string, int>();
         }
         public static VesselPermissions LoadVesselPermissions(string id) {
             string directory = Path.Combine(Server.universeDirectory, "Vessels", "Permissions");

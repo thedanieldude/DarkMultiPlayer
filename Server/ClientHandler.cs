@@ -647,6 +647,12 @@ namespace DarkMultiPlayerServer
                     case ClientMessageType.PERMISSIONS_UPDATE:
                         Messages.PermissionsUpdate.HandlePermissionsUpdate(client, message.data);
                         break;
+                    case ClientMessageType.PERMISSIONS_REQUEST:
+                        Messages.PermissionsRequest.HandlePermissionsRequest(client, message.data);
+                        break;
+                    case ClientMessageType.FACTION_UPDATE:
+                        Messages.FactionUpdate.HandleFactionUpdate(client, message.data);
+                        break;
                     case ClientMessageType.CONNECTION_END:
                         Messages.ConnectionEnd.HandleConnectionEnd(client, message.data);
                         break;

@@ -104,6 +104,13 @@ namespace DarkMultiPlayerServer
                 //Add new stock parts
                 BackwardsCompatibility.UpdateModcontrolPartList();
 
+                // Load Factions and Permissions
+                PermissionsHandler.Reset();
+                PermissionsHandler.GeneratePermissionsForVesselsWithoutPermissions();
+                PermissionsHandler.LoadPermissions();
+                FactionsHandler.Reset();
+                FactionsHandler.LoadFactions();
+
                 if (System.Net.Sockets.Socket.OSSupportsIPv6)
                 {
                     Settings.settingsStore.address = "::";

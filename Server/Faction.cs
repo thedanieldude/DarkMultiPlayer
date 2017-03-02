@@ -16,18 +16,22 @@ namespace DarkMultiPlayerServer
         [DataMember]
         public String OwnerName;
         [DataMember]
-        public List<FactionPermission> Members;
+        public Dictionary<string,int> Members;
         [DataMember]
-        bool PublicFaction;
-
-        public static Faction LoadFaction(string id)
+        public bool PublicFaction;
+        
+        public static Faction LoadFaction(string plainid)
         {
+            if(plainid.Contains("<")|| plainid.Contains(">"))
+            {
+                plainid = GetPlainID(plainid);
+            }
             string directory = Path.Combine(Server.universeDirectory, "Factions");
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            string path = Path.Combine(directory, id + ".json");
+            string path = Path.Combine(directory, plainid + ".json");
             if (!File.Exists(path))
             {
                 throw new FileNotFoundException();
@@ -45,7 +49,7 @@ namespace DarkMultiPlayerServer
             {
                 Directory.CreateDirectory(directory);
             }
-            string path = Path.Combine(directory, faction.FactionID + ".json");
+            string path = Path.Combine(directory, GetPlainID(faction.FactionID) + ".json");
             if (File.Exists(path))
             {
                 File.WriteAllText(path, String.Empty);
@@ -57,25 +61,43 @@ namespace DarkMultiPlayerServer
                 ser.WriteObject(stream, faction);
 
             }
+
+        }
+        public FactionRank RankOf(string id)
+        {
+            if (!IsInFaction(id))
+            {
+                return FactionRank.NA;
+            }
+            return OwnerName==id ? FactionRank.Owner :(FactionRank)Members[id];
+        }
+        public bool IsInFaction(string Name)
+        {
+            int output;
+            return Members.TryGetValue(Name, out output);
+
         }
         public static String GenerateFactionID()
         {
             Random random = new Random();
             const string chars = "abcdefghijklmnopqrstuvwxyz1234567890";
-            return new string(Enumerable.Repeat(chars, 12).Select(s => s[random.Next(s.Length)]).ToArray());
+            return "<" + new string(Enumerable.Repeat(chars, 12).Select(s => s[random.Next(s.Length)]).ToArray())+ ">";
         }
-    }
-    [DataContract]
-    public struct FactionPermission {
-        [DataMember]
-        public String Player;
-        [DataMember]
-        public FactionRank rank;
-        public FactionPermission(String player,FactionRank rank)
+        public static string GetPlainID(string FactionID)
         {
-            Player = player;this.rank = rank;
+            if (FactionID == null) return null;
+            if (FactionID == String.Empty) return "";
+            if(!(FactionID.Contains("<") || FactionID.Contains(">")))
+            {
+                return FactionID;
+            }
+            var chararray = FactionID.ToCharArray().ToList();
+            chararray.RemoveAt(chararray.Count - 1);
+            chararray.RemoveAt(0);
+            return new string(chararray.ToArray());
         }
     }
+
     public enum FactionRank
     {
         NA = -1,

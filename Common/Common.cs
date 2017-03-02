@@ -74,7 +74,15 @@ namespace DarkMultiPlayerCommon
             }
             return returnBytes;
         }
-
+        public static Dictionary<string,int> ListsToDictionary(List<string> Keys,List<int> Values)
+        {
+            Dictionary<string, int> output = new Dictionary<string, int>();
+            for(int i = 0; i < Keys.Count; i++)
+            {
+                output.Add(Keys[i], Values[i]);
+            }
+            return output;
+        }
         public static string ConvertConfigStringToGUIDString(string configNodeString)
         {
             if (configNodeString == null || configNodeString.Length != 32)
@@ -549,7 +557,13 @@ namespace DarkMultiPlayerCommon
         LOCK_SYSTEM,
         MOD_DATA,
         SPLIT_MESSAGE,
+        FACTION_UPDATE,
+        FACTION_CREATE,
+        FACTION_DELETE,
+        FACTION_INVITE,
+        FACTION_KICK,
         PERMISSIONS_UPDATE,
+        PERMISSIONS_REQUEST,
         CONNECTION_END
     }
 
@@ -585,7 +599,15 @@ namespace DarkMultiPlayerCommon
         LOCK_SYSTEM,
         MOD_DATA,
         SPLIT_MESSAGE,
+        FACTION_UPDATE,
+        FACTION_DELETED,
+        FACTION_INVITE,
+        FACTION_KICKED,
+        FACTION_JOIN,
+        FACTION_LEAVE,
         PERMISSIONS_UPDATE,
+        PERMISSIONS_REQUEST,
+        PERMISSIONS_COMPLETE,
         CONNECTION_END
     }
 
@@ -595,7 +617,7 @@ namespace DarkMultiPlayerCommon
         CONNECTING,
         CONNECTED
     }
-
+    
     public enum ClientState
     {
         DISCONNECTED,
@@ -609,13 +631,22 @@ namespace DarkMultiPlayerCommon
         KERBALS_SYNCED,
         SYNCING_VESSELS,
         VESSELS_SYNCED,
+        SYNCING_PERMISSIONS,
+        PERMISSIONS_SYNCED,
         TIME_LOCKING,
         TIME_LOCKED,
         STARTING,
         RUNNING,
         DISCONNECTING
     }
-
+    public enum VesselPlayerPerms
+    {
+        None=0,
+        CanControl=1,
+        CanEditPermission=2,
+        CanEditOwner=4,
+        All=7
+    }
     public enum WarpMode
     {
         MCW_FORCE,

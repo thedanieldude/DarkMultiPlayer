@@ -10,6 +10,7 @@ using UnityEngine;
 using DarkMultiPlayerCommon;
 using MessageStream2;
 using System.Linq;
+
 namespace DarkMultiPlayer
 {
     public class NetworkWorker
@@ -117,7 +118,14 @@ namespace DarkMultiPlayer
                 state = ClientState.SYNCING_KERBALS;
                 SendKerbalsRequest();
             }
-            if (state == ClientState.VESSELS_SYNCED)
+            if(state == ClientState.VESSELS_SYNCED)
+            {
+                DarkLog.Debug("Requesting Vessel Permissions");
+                Client.fetch.status = "Syncing Permissions";
+                state = ClientState.SYNCING_PERMISSIONS;
+                SendPermissionsRequest();
+            }
+            if (state == ClientState.PERMISSIONS_SYNCED)
             {
                 DarkLog.Debug("Vessels Synced!");
                 Client.fetch.status = "Syncing universe time";
@@ -551,6 +559,7 @@ namespace DarkMultiPlayer
                                         case ServerMessageType.HEARTBEAT:
                                         case ServerMessageType.KERBAL_COMPLETE:
                                         case ServerMessageType.VESSEL_COMPLETE:
+                                        case ServerMessageType.PERMISSIONS_COMPLETE:
                                             HandleMessage(receiveMessage);
                                             break;
                                         default: break;
@@ -859,6 +868,13 @@ namespace DarkMultiPlayer
                         HandleSplitMessage(message.data);
                         break;
                     case ServerMessageType.PERMISSIONS_UPDATE:
+                        HandlePermissionsUpdate(message.data);
+                        break;
+                    case ServerMessageType.PERMISSIONS_REQUEST:
+                        HandlePermissionsRequest(message.data);
+                        break;
+                    case ServerMessageType.PERMISSIONS_COMPLETE:
+                        HandlePermissionsComplete(message.data);
                         break;
                     case ServerMessageType.CONNECTION_END:
                         HandleConnectionEnd(message.data);
@@ -874,7 +890,11 @@ namespace DarkMultiPlayer
                 SendDisconnect("Error handling " + message.type + " message");
             }
         }
-
+        private void HandlePermissionsComplete(byte[] messageData)
+        {
+            DarkLog.Debug("Recieved Permissions Complete, Changing state...");
+            state = ClientState.PERMISSIONS_SYNCED;
+        }
         private void HandleHandshakeChallange(byte[] messageData)
         {
             try
@@ -904,9 +924,10 @@ namespace DarkMultiPlayer
             {
                 perm.VesselID = mr.Read<string>();
                 perm.OwnerName = mr.Read<string>();
-                perm.OwnerIsFaction = mr.Read<bool>();
-                perm.CanEditPermissions = mr.Read<string[]>().ToList();
-                perm.CanControl = mr.Read<string[]>().ToList();
+                var players = mr.Read<string[]>().ToList();
+                var permissions = mr.Read<int[]>().ToList();
+
+                perm.Permissions = Common.ListsToDictionary(players, permissions);
             }
 
             if (PermissionsManager.VesselPerms.ContainsKey(perm.VesselID))
@@ -921,7 +942,32 @@ namespace DarkMultiPlayer
                 PermissionsManager.VesselPerms.Add(perm.VesselID, perm);
             }
         }
-    
+        private void HandlePermissionsRequest(byte[] messageData)
+        {
+            DarkLog.Debug("Recieved Permissions Request");
+            if (messageData.Length > 0) { 
+            using(MessageReader mr = new MessageReader(messageData))
+            {
+                int permamount = mr.Read<int>();
+                    DarkLog.Debug("Recieved " + permamount);
+                PermissionsManager.Reset();
+                for (int i = 0; i < permamount; i++)
+                {
+                    VesselPermissions perm = new VesselPermissions();
+                    perm.VesselID = mr.Read<string>();
+                    perm.OwnerName = mr.Read<string>();
+                    var players = mr.Read<string[]>().ToList();
+                    var permissions = mr.Read<int[]>().ToList();
+                    
+                    perm.Permissions = Common.ListsToDictionary(players, permissions);
+                    DarkLog.Debug(perm.VesselID);
+                    PermissionsManager.VesselPerms.Add(perm.VesselID, perm);
+                }
+                
+            }
+            }
+            
+        }
         private void HandleHandshakeReply(byte[] messageData)
         {
 
@@ -1428,7 +1474,36 @@ namespace DarkMultiPlayer
                 VesselWorker.fetch.QueueActiveVessel(player, vesselID);
             }
         }
+        private void HandleFactionUpdate(byte[] messageData)
+        {
+            Faction faction = new Faction();
+            using (MessageReader mr = new MessageReader(messageData))
+            {
+                faction.FactionID = mr.Read<string>();
+                faction.FactionName = mr.Read<string>();
+                faction.OwnerName = mr.Read<string>();
+                var members = mr.Read<string[]>();
+                var ranks = mr.Read<int[]>();
+                faction.Members = new Dictionary<string, int>();
+                for (int i = 0; i < members.Length; i++)
+                {
+                    faction.Members.Add(members[i], ranks[i]);
+                }
+                faction.PublicFaction = mr.Read<bool>();
+            }
+            if (FactionManager.Factions.ContainsKey(faction.FactionID))
+            {
 
+                FactionManager.Factions[faction.FactionID] = faction;
+
+            
+            }
+            
+            else
+            {
+                FactionManager.Factions.Add(faction.FactionID, faction);
+            }
+        }
         private void HandleVesselComplete()
         {
             state = ClientState.VESSELS_SYNCED;
@@ -1702,6 +1777,20 @@ namespace DarkMultiPlayer
             newMessage.data = messageData;
             QueueOutgoingMessage(newMessage, true);
         }
+        public void SendVesselPermissions(VesselPermissions perm)
+        {
+            ClientMessage message = new ClientMessage();
+            message.type = ClientMessageType.PERMISSIONS_UPDATE;
+            using (MessageWriter mw = new MessageWriter())
+            {
+                mw.Write<string>(perm.VesselID);
+                mw.Write<string>(perm.OwnerName);
+                mw.Write<string[]>(perm.Permissions.Keys.ToArray());
+                mw.Write<int[]>(perm.Permissions.Values.ToArray());
+                message.data = mw.GetMessageBytes();
+            }
+            QueueOutgoingMessage(message, false);
+        }
         //Called from PlayerStatusWorker
         public void SendPlayerStatus(PlayerStatus playerStatus)
         {
@@ -1747,7 +1836,13 @@ namespace DarkMultiPlayer
             newMessage.type = ClientMessageType.KERBALS_REQUEST;
             QueueOutgoingMessage(newMessage, true);
         }
-
+        private void SendPermissionsRequest()
+        {
+            ClientMessage newMessage = new ClientMessage();
+            newMessage.type = ClientMessageType.PERMISSIONS_REQUEST;
+            
+            QueueOutgoingMessage(newMessage, false);
+        }
         private void SendVesselsRequest(string[] requestList)
         {
             ClientMessage newMessage = new ClientMessage();

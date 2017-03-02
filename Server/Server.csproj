@@ -53,6 +53,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="CommandHandler.cs" />
     <Compile Include="ClientHandler.cs" />
+    <Compile Include="Messages\FactionUpdate.cs" />
+    <Compile Include="Messages\PermissionsRequest.cs" />
     <Compile Include="Messages\PermissionsUpdate.cs" />
     <Compile Include="PermissionsHandler.cs" />
     <Compile Include="VesselPermissions.cs" />

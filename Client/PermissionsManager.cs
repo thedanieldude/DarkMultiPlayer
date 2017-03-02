@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+using DarkMultiPlayerCommon;
 namespace DarkMultiPlayer
 {
     public static class PermissionsManager
@@ -25,20 +23,23 @@ namespace DarkMultiPlayer
                 }
             }
         }
+        
     }
     public class VesselPermissions
     {
         public string VesselID;
         public string OwnerName;
-        public bool OwnerIsFaction;
-        public List<String> CanEditPermissions;
-        public List<String> CanControl;
+        public Dictionary<String, int> Permissions;
         public static VesselPermissions Default
         {
             get
             {
-                return new VesselPermissions() { VesselID = "-1", OwnerName = "-1", OwnerIsFaction = false, CanEditPermissions = new List<String>() { "<everyone>" }, CanControl = new List<String>() { "<everyone>" } };
+                return new VesselPermissions() { VesselID = "-1", OwnerName = "", Permissions = new Dictionary<string, int>() { { "<everyone>", (int)VesselPlayerPerms.All } } };
             }
+        }
+        public VesselPermissions()
+        {
+            Permissions = new Dictionary<string, int>();
         }
     }
 }

@@ -63,6 +63,7 @@ namespace DarkMultiPlayerServer.Messages
             ServerMessage newMessage = new ServerMessage();
             newMessage.type = ServerMessageType.VESSEL_COMPLETE;
             ClientHandler.SendToClient(client, newMessage, false);
+            
         }
     }
 }

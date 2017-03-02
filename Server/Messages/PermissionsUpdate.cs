@@ -15,12 +15,11 @@ namespace DarkMultiPlayerServer.Messages
             {
                 mw.Write<string>(perm.VesselID);
                 mw.Write<string>(perm.OwnerName);
-                mw.Write<bool>(perm.OwnerIsFaction);
-                mw.Write<string[]>(perm.CanEditPermissions.ToArray());
-                mw.Write<string[]>(perm.CanControl.ToArray());
+                mw.Write<string[]>(perm.Permissions.Keys.ToArray());
+                mw.Write<int[]>(perm.Permissions.Values.ToArray());
                 message.data = mw.GetMessageBytes();
             }
-            ClientHandler.SendToAll(client, message, false);
+            ClientHandler.SendToAll(null, message, false);
         }
         public static void HandlePermissionsUpdate(ClientObject client, byte[] messageData)
         {
@@ -29,14 +28,14 @@ namespace DarkMultiPlayerServer.Messages
             {
                 perm.VesselID = mr.Read<string>();
                 perm.OwnerName = mr.Read<string>();
-                perm.OwnerIsFaction = mr.Read<bool>();
-                perm.CanEditPermissions = mr.Read<string[]>().ToList();
-                perm.CanControl = mr.Read<string[]>().ToList();
+                var players = mr.Read<string[]>().ToList();
+                var permissions = mr.Read<int[]>().ToList();
+                perm.Permissions=players.Zip<string,int,KeyValuePair<string,int>>(permissions, (s, i) => new KeyValuePair<string, int>( s, i )).ToDictionary(item => item.Key,item => item.Value);
             }
 
             if (PermissionsHandler.vesselperms.ContainsKey(perm.VesselID))
             {
-                if (PermissionsHandler.vesselperms[perm.VesselID].OwnerName == perm.OwnerName||PermissionsHandler.vesselperms[perm.VesselID].CanEditPermissions.Contains("<everyone>"))
+                if (PermissionsHandler.vesselperms[perm.VesselID].OwnerName == perm.OwnerName)
                 {
                     PermissionsHandler.vesselperms[perm.VesselID] = perm;
                     SendPermissionsUpdate(client, perm);

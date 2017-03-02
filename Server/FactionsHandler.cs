@@ -9,11 +9,15 @@ namespace DarkMultiPlayerServer
         public static Dictionary<string, Faction> Factions = new Dictionary<string, Faction>();
         public static void Reset()
         {
-            Factions = new Dictionary<string, Faction>();
+            Factions.Clear();
         }
         public static void LoadFactions()
         {
             string directory = Path.Combine(Server.universeDirectory, "Factions");
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
             foreach (string file in Directory.EnumerateFiles(directory))
             {
                 string FactionId = Path.GetFileNameWithoutExtension(file);
