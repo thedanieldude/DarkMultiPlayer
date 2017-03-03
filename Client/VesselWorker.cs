@@ -150,6 +150,7 @@ namespace DarkMultiPlayer
                         DarkLog.Debug("Switching to active vessel!");
                         FlightGlobals.ForceSetActiveVessel(newActiveVessel);
                         newActiveVessel = null;
+                        
                         return;
                     }
                     else
@@ -642,6 +643,14 @@ namespace DarkMultiPlayer
                             DarkLog.Debug("Resetting last send time for " + lastVesselID);
                             serverVesselsProtoUpdate[lastVesselID] = 0f;
                             LockSystem.fetch.ReleasePlayerLocksWithPrefix(Settings.fetch.playerName, "control-");
+                        }
+                        if (!PermissionsManager.VesselPerms.ContainsKey(FlightGlobals.fetch.activeVessel.id.ToString()))
+                        {
+                            var perm = VesselPermissions.Default;
+                            perm.OwnerName = PlayerStatusWorker.fetch.myPlayerStatus.playerName;
+                            perm.Permissions = new Dictionary<string, int>();
+                            perm.VesselID = FlightGlobals.fetch.activeVessel.id.ToString();
+                            NetworkWorker.fetch.SendVesselPermissions(perm);
                         }
                         //Reset the send time of the vessel we just switched to
                         serverVesselsProtoUpdate[FlightGlobals.fetch.activeVessel.id] = 0f;

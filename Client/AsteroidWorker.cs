@@ -95,6 +95,7 @@ namespace DarkMultiPlayer
                                         DarkLog.Debug("Sending changed asteroid, new state: " + asteroid.DiscoveryInfo.trackingStatus.Value + "!");
                                         serverAsteroidTrackStatus[asteroid.id.ToString()] = asteroid.DiscoveryInfo.trackingStatus.Value;
                                         NetworkWorker.fetch.SendVesselProtoMessage(pv, false, false);
+
                                     }
                                 }
                             }
@@ -122,6 +123,7 @@ namespace DarkMultiPlayer
                                     serverAsteroids.Add(checkVessel.id.ToString());
                                     VesselWorker.fetch.RegisterServerVessel(checkVessel.id);
                                     NetworkWorker.fetch.SendVesselProtoMessage(checkVessel.protoVessel, false, false);
+                                    NetworkWorker.fetch.SendVesselPermissions(PermissionsManager.GenerateAsteroidPermissions(checkVessel.protoVessel));
                                 }
                                 else
                                 {

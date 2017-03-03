@@ -23,6 +23,7 @@ namespace DarkMultiPlayerServer.Messages
         }
         public static void HandlePermissionsUpdate(ClientObject client, byte[] messageData)
         {
+            DarkLog.Debug("Recieved Vessel Permissions");
             VesselPermissions perm = new VesselPermissions();
             using (MessageReader mr = new MessageReader(messageData))
             {
@@ -30,23 +31,28 @@ namespace DarkMultiPlayerServer.Messages
                 perm.OwnerName = mr.Read<string>();
                 var players = mr.Read<string[]>().ToList();
                 var permissions = mr.Read<int[]>().ToList();
-                perm.Permissions=players.Zip<string,int,KeyValuePair<string,int>>(permissions, (s, i) => new KeyValuePair<string, int>( s, i )).ToDictionary(item => item.Key,item => item.Value);
+                perm.Permissions = Common.ListsToDictionary(players, permissions);
             }
 
             if (PermissionsHandler.vesselperms.ContainsKey(perm.VesselID))
-            {
+            { 
                 if (PermissionsHandler.vesselperms[perm.VesselID].OwnerName == perm.OwnerName)
                 {
                     PermissionsHandler.vesselperms[perm.VesselID] = perm;
+                    VesselPermissions.SaveVesselPermissions(perm);
                     SendPermissionsUpdate(client, perm);
+
                 }
 
                 }
                 else
                 {
                     PermissionsHandler.vesselperms.Add(perm.VesselID, perm);
+                    VesselPermissions.SaveVesselPermissions(perm);
                     SendPermissionsUpdate(client, perm);
+
                 }
+            
             }
            
             

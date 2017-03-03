@@ -12,6 +12,13 @@ namespace DarkMultiPlayer
             VesselPerms.Clear();
             MyVessels.Clear();
         }
+        public static VesselPermissions GenerateAsteroidPermissions(ProtoVessel vessel)
+        {
+            VesselPermissions output = VesselPermissions.Default;
+            output.VesselID = vessel.vesselID.ToString();
+            return output;
+            
+        }
         public static void FindMyVessels()
         {
             MyVessels.Clear();

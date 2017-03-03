@@ -107,6 +107,7 @@ namespace DarkMultiPlayerServer
 
                 // Load Factions and Permissions
                 PermissionsHandler.Reset();
+                PermissionsHandler.DeleteVesselessPermissions();
                 PermissionsHandler.GeneratePermissionsForVesselsWithoutPermissions();
                 PermissionsHandler.LoadPermissions();
                 FactionsHandler.Reset();

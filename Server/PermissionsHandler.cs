@@ -12,6 +12,24 @@ namespace DarkMultiPlayerServer
         {
             vesselperms = new Dictionary<string, VesselPermissions>();
         }
+        public static void DeleteVesselessPermissions()
+        {
+            string Vesseldirectory = Path.Combine(Server.universeDirectory, "Vessels");
+            string Permdirectory = Path.Combine(Server.universeDirectory, "Vessels", "Permissions");
+            if (!Directory.Exists(Permdirectory))
+            {
+                Directory.CreateDirectory(Permdirectory);
+            }
+            foreach (string file in Directory.EnumerateFiles(Permdirectory))
+            {
+                string VesselID = Path.GetFileNameWithoutExtension(file);
+                if (!File.Exists(Path.Combine(Vesseldirectory, VesselID + ".txt")))
+                {
+                    File.Delete(file);
+                }
+
+            }
+        }
         public static void GeneratePermissionsForVesselsWithoutPermissions()
         {
             string Vesseldirectory = Path.Combine(Server.universeDirectory, "Vessels");
