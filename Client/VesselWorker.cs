@@ -647,7 +647,7 @@ namespace DarkMultiPlayer
                         if (!PermissionsManager.VesselPerms.ContainsKey(FlightGlobals.fetch.activeVessel.id.ToString()))
                         {
                             var perm = VesselPermissions.Default;
-                            perm.OwnerName = PlayerStatusWorker.fetch.myPlayerStatus.playerName;
+                            perm.OwnerName = FactionManager.MyFactionID==""? Settings.fetch.playerName:FactionManager.MyFactionID;
                             perm.Permissions = new Dictionary<string, int>();
                             perm.VesselID = FlightGlobals.fetch.activeVessel.id.ToString();
                             NetworkWorker.fetch.SendVesselPermissions(perm);
@@ -979,7 +979,6 @@ namespace DarkMultiPlayer
                 }
             }
         }
-
         public void SendKerbalIfDifferent(ProtoCrewMember pcm)
         {
             ConfigNode kerbalNode = new ConfigNode();
@@ -1034,7 +1033,7 @@ namespace DarkMultiPlayer
                 {
                     if (FlightGlobals.fetch.activeVessel != null)
                     {
-                        if (LockSystem.fetch.LockExists("control-" + FlightGlobals.fetch.activeVessel.id.ToString()) && !LockSystem.fetch.LockIsOurs("control-" + FlightGlobals.fetch.activeVessel.id.ToString()))
+                        if (!PermissionsManager.CanControl(FlightGlobals.fetch.activeVessel.id.ToString(),Settings.fetch.playerName)|| LockSystem.fetch.LockExists("control-" + FlightGlobals.fetch.activeVessel.id.ToString()) && !LockSystem.fetch.LockIsOurs("control-" + FlightGlobals.fetch.activeVessel.id.ToString()))
                         {
                             spectateType = 1;
                             return true;

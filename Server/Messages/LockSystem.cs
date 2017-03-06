@@ -45,6 +45,7 @@ namespace DarkMultiPlayerServer.Messages
                             {
                                 Messages.ConnectionEnd.SendConnectionEnd(client, "Kicked for sending a lock message for another player");
                             }
+
                             bool lockResult = DarkMultiPlayerServer.LockSystem.fetch.AcquireLock(lockName, playerName, force);
                             using (MessageWriter mw = new MessageWriter())
                             {

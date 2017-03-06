@@ -407,7 +407,7 @@ namespace DarkMultiPlayer
 
         public void GenerateModControlFile(bool whitelistMode)
         {
-            string gameDataDir = Path.Combine(KSPUtil.ApplicationRootPath, "GameData");
+            string gameDataDir = Path.Combine(KSPUtil.ApplicationRootPath,"GameData");
             string[] topLevelFiles = Directory.GetFiles(gameDataDir);
             string[] modDirectories = Directory.GetDirectories(gameDataDir);
 
@@ -499,7 +499,7 @@ namespace DarkMultiPlayer
                 }
             }
             string modFileData = Common.GenerateModFileStringData(requiredFiles.ToArray(), optionalFiles.ToArray(), whitelistMode, new string[0], partsList.ToArray());
-            string saveModFile = Path.Combine(KSPUtil.ApplicationRootPath, "DMPModControl.txt");
+            string saveModFile = Path.Combine(@"C: \Users\daniel.shemesh\Downloads\ServerMods", "DMPModControl.txt");
             using (StreamWriter sw = new StreamWriter(saveModFile, false))
             {
                 sw.Write(modFileData);

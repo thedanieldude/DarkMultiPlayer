@@ -1414,6 +1414,7 @@ namespace DarkMultiPlayer
                 byte[] vesselData = Compression.DecompressIfNeeded(mr.Read<byte[]>());
                 UniverseSyncCache.fetch.QueueToCache(vesselData);
                 ConfigNode vesselNode = ConfigNodeSerializer.fetch.Deserialize(vesselData);
+                
                 if (vesselNode != null)
                 {
                     string configGuid = vesselNode.GetValue("pid");

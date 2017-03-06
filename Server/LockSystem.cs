@@ -31,8 +31,39 @@ namespace DarkMultiPlayerServer
             {
                 if (force || !playerLocks.ContainsKey(lockName))
                 {
-                    playerLocks[lockName] = playerName;
-                    return true;
+
+                    if (force)
+                    {
+                        if (lockName.Contains("control-"))
+                        {
+                            string id = lockName.Substring(8);
+                            if (PermissionsHandler.vesselperms.ContainsKey(id))
+                            {
+                                if (PermissionsHandler.vesselperms[id].CanPlayerControl(id))
+                                {
+                                    playerLocks[lockName] = playerName;
+                                    return true;
+                                }
+                                
+                            }
+                            else
+                            {
+                                playerLocks[lockName] = playerName;
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            playerLocks[lockName] = playerName;
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        playerLocks[lockName] = playerName;
+                        return true;
+                    }
+                    
                 }
                 return false;
             }

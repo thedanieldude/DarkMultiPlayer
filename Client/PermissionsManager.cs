@@ -19,6 +19,16 @@ namespace DarkMultiPlayer
             return output;
             
         }
+        public static bool CanControl(string vesselID,string Name)
+        {
+            if (!VesselPerms.ContainsKey(vesselID))
+            {
+                return true;
+            }
+            else {
+                return VesselPerms[vesselID].CanPlayerControl(Name);
+            }
+        }
         public static void FindMyVessels()
         {
             MyVessels.Clear();
@@ -47,6 +57,50 @@ namespace DarkMultiPlayer
         public VesselPermissions()
         {
             Permissions = new Dictionary<string, int>();
+        }
+        public bool CanPlayerEditPermissions(string Name)
+        {
+            if (IsOwner(Name)) return true;
+            if (Permissions.ContainsKey(Name))
+            {
+                return (Permissions[Name] & (int)VesselPlayerPerms.CanEditPermission) > 0;
+
+
+
+            }
+            else if (Permissions.ContainsKey("<everyone>"))
+            {
+                return (Permissions["<everyone>"] & (int)VesselPlayerPerms.CanEditPermission) > 0;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool CanPlayerControl(string Name)
+        {
+            if (CanPlayerEditPermissions(Name)) return true;
+
+
+            if (Permissions.ContainsKey(Name))
+            {
+                return (Permissions[Name] & (int)VesselPlayerPerms.CanControl) > 0;
+
+
+
+            }
+            else if (Permissions.ContainsKey("<everyone>"))
+            {
+                return (Permissions["<everyone>"] & (int)VesselPlayerPerms.CanControl) > 0;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool IsOwner(string Name)
+        {
+            return OwnerName == Name;
         }
     }
 }
